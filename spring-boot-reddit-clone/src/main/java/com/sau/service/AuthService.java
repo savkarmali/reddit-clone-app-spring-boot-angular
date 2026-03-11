@@ -1,6 +1,7 @@
 package com.sau.service;
 
 import com.sau.dto.RegisterRequest;
+import com.sau.exception.SpringBootRedditException;
 import com.sau.model.NotificationEmail;
 import com.sau.model.User;
 import com.sau.model.VerificationToken;
@@ -12,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -49,5 +51,20 @@ public class AuthService {
 
         verificationTokenRepository.save(verificationToken);
         return token;
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringBootRedditException("Invalid Token"));
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+    @Transactional
+    protected void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new SpringBootRedditException("User not found with name - " + username));
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
