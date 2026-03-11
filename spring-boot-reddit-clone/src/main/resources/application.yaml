@@ -5,12 +5,12 @@ spring:
   application:
     name: spring-boot-reddit-clone
 
+############# Database Properties ####################################
   datasource:
     url: jdbc:mysql://localhost:3306/reddit_clone_db
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -18,3 +18,11 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+
+############# Mail Properties ###########################################
+  mail:
+    host: smtp.mailtrap.io
+    port: 2525
+    username: 40c5005fc4a3fa
+    password: e456fbc762b55b
+    protocol: smtp
